@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <widget id="com.ledgerd.wallet.mobile" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-  <name>Mobile Wallet</name>
+  <name>Ledgerd钱包</name>
   <description>
-        An Ionic Framework and Cordova project.
+    Ledgerd移动端钱包，支持Ledgerd网络中各货币的收付款功能。
     </description>
-  <author email="you@example.com" href="http://example.com.com/">
-      Your Name Here
-    </author>
+  <author email="yongzifei@hotmail.com" href="http://example.com.com/">
+    雍自飞
+  </author>
   <content src="index.html"/>
   <access origin="*"/>
   <preference name="webviewbounce" value="false"/>
