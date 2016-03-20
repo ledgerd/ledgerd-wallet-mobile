@@ -1,0 +1,33 @@
+<ion-view view-title="Ledgerd Wallet">
+  <ion-nav-back-button></ion-nav-back-button>
+  <ion-content class="padding">
+    <div class="list">
+      <label class="item item-input item-stacked-label">
+        <span class="input-label">接收方地址</span>
+        <input type="text" placeholder="r开头的地址" ng-change="updateAddress()" ng-model="send.address">
+      </label>
+      <label class="item item-input item-stacked-label">
+        <span class="input-label">金额</span>
+        <input type="text" placeholder="1.00" ng-change="updateValue()" ng-model="send.value">
+      </label>
+      <label class="item item-input item-select">
+        <div class="input-label">币种</div>
+        <select ng-change="updateCurrency()" ng-model="send.amount" ng-options="a.currency for a in amount">
+        </select>
+      </label>
+    </div>
+
+    <div>{{status_text}}</div>
+
+    <div class="card" ng-repeat="fund in funds">
+      <div class="item item-text-wrap">
+        <h3>{{fund.source.maxAmount.value}} {{fund.source.maxAmount.currency}}</h3>
+      </div>
+      <div class="item item-divider">
+        <button class="button button-block button-positive" ng-click="pay(fund)">
+        用{{fund.source.maxAmount.currency}}支付
+        </button>
+      </div>
+    </div>
+  </ion-content>
+</ion-view>
