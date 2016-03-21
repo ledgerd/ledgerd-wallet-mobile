@@ -24,7 +24,13 @@ angular.module('starter.controllers', [])
     }
 
     $scope.publicKey = localStorage.getItem('publicKey');
-    new QRCode(document.getElementById("qrcode"),localStorage.getItem('publicKey'));
+    new QRCode(document.getElementById("qrcode"),{
+      text:localStorage.getItem('publicKey'),
+      width: 128,
+      height: 128,
+      colorDark : "#333333",
+      colorLight : "#ffffff",
+    });
 
     $scope.scanPayment=function(){
       //cordova.plugins.barcodeScanner.scan(
