@@ -68,7 +68,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
   })
 
     .state('payment.input', {
-      url: '/input',
+      url: '/input/:address',
       views: {
         'payment-dash': {
           templateUrl: 'templates/payment-input.html',

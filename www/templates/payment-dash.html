@@ -23,20 +23,9 @@
       <div class="item item-divider">
         余额
       </div>
-      <div class="item item-icon-left" href="#">
-        <i class="icon ion-social-usd"></i>
-        XRP
-        <span class="badge badge-assertive">20</span>
-      </div>
-      <div class="item item-icon-left" href="#">
-        <i class="icon ion-social-usd"></i>
-        LGD
-        <span class="badge badge-assertive">1000</span>
-      </div>
-      <div class="item item-icon-left" href="#">
-        <i class="icon ion-social-yen"></i>
-        CNY
-        <span class="badge badge-assertive">1000</span>
+      <div class="item" href="#" ng-repeat="item in items">
+        {{item.currency}}
+        <span class="badge badge-assertive">{{item.fund}}</span>
       </div>
     </div>
 

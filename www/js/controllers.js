@@ -12,7 +12,7 @@ angular.module('starter.controllers', [])
     }
   })
 
-.controller('DashCtrl', function($scope,$location) {
+.controller('DashCtrl', function($scope,$location,$state) {
     //如果未登录跳转到登录
     if(!localStorage.getItem('publicKey')){
       $location.path('/auth/open');
@@ -33,26 +33,62 @@ angular.module('starter.controllers', [])
       colorLight : "#ffffff",
     });
 
+    //获取账户余额
+    conn.then(function(){
+      api.getServerInfo().then(function(info){
+        api.getBalances($scope.publicKey,{ledgerVersion:info.validatedLedger.ledgerVersion-1}).then(function(balances) {
+          var items = [];
+          balances.forEach(function (balance) {
+            var index = -1;
+            for(i=0;i<items.length;i++){
+              if(items[i].currency == balance.currency){
+                index = i;
+                break;
+              }
+            }
+            //var index = items.indexOf(balance.currency);
+            if (index == -1) {//如果不含同种币
+              var item = {
+              currency: balance.currency,
+              fund: Number(balance.value),
+              banks: [{
+                value: balance.value,
+                counterparty: balance.counterparty
+              }]
+              }
+              items.push(item);
+            } else {//已经存在同种币
+              var item = items[index];
+              item.fund += Number(balance.value);
+              item.banks.push({
+                value: balance.value,
+                counterparty: balance.counterparty
+              });
+            }
+          });//forEach
+          $scope.items = items;
+          console.log(items);
+        })
+      })
+    });
+
     //向他人付款功能
     $scope.scanPayment=function(){
       cordova.plugins.barcodeScanner.scan(
         function (result) {
-          alert("We got a barcode\n" +
-            "Result: " + result.text + "\n" +
-            "Format: " + result.format + "\n" +
-            "Cancelled: " + result.cancelled);
+          $state.go('payment.input',{address:result.text})
         },
         function (error) {
-          alert("Scanning failed: " + error);
+          alert("扫描失败: " + error);
         }
       );
       //$location.path('/payment/input');
     }
   })
 
-  .controller('InputCtrl',function($scope,$location) {
+  .controller('InputCtrl',function($scope,$location,$stateParams) {
     $scope.send = {};
-    $scope.send.address = 'rUBJSUTZRniy9Kpg4ZPKXFQHB5o19ZTFtM';
+    $scope.send.address = $stateParams.address;
     $scope.send.value= '1';
     var xrpAmount={
       currency: 'XRP',
@@ -65,7 +101,7 @@ angular.module('starter.controllers', [])
 
     //计算要支付货币的路径
     $scope.findPath = function () {
-      $scope.findpath_text='计算支付路径...';
+      $scope.status_text='计算支付路径...';
       var findpath = {
         source: {
           address: localStorage.getItem('publicKey')
@@ -82,7 +118,7 @@ angular.module('starter.controllers', [])
         findpath.destination.amount.counterparty=$scope.send.amount.counterparty;
       }
       api.getPaths(findpath).then(function (pass, fail) {
-        $scope.findpath_text='';
+        $scope.status_text='';
         console.log('path',pass);
         $scope.funds=pass;
       });
@@ -107,7 +143,7 @@ angular.module('starter.controllers', [])
     conn.then(function(){
       $scope.status_text='成功连接服务器';
       api.getServerInfo().then(function(info){
-        $scope.status_text='成功获取服务器信息，开始查询信任线';
+        $scope.status_text='成功获取服务器信息，开始查询信任线...';
         api.getTrustlines($scope.send.address,{ledgerVersion:info.validatedLedger.ledgerVersion-1}).then(function (trustlines) {
           $scope.status_text='成功获取到信任线';
           //console.log('trustlines',trustlines);
