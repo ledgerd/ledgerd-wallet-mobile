@@ -13,10 +13,11 @@ angular.module('starter.controllers', [])
   })
 
 .controller('DashCtrl', function($scope,$location) {
+    //如果未登录跳转到登录
     if(!localStorage.getItem('publicKey')){
       $location.path('/auth/open');
     }
-
+    //退出登录
     $scope.logout = function(){
       localStorage.removeItem('publicKey');
       localStorage.removeItem('privateKey');
@@ -25,26 +26,27 @@ angular.module('starter.controllers', [])
 
     $scope.publicKey = localStorage.getItem('publicKey');
     new QRCode(document.getElementById("qrcode"),{
-      text:localStorage.getItem('publicKey'),
-      width: 128,
-      height: 128,
+      text:$scope.publicKey,
+      width: 200,
+      height: 200,
       colorDark : "#333333",
       colorLight : "#ffffff",
     });
 
+    //向他人付款功能
     $scope.scanPayment=function(){
-      //cordova.plugins.barcodeScanner.scan(
-      //  function (result) {
-      //    alert("We got a barcode\n" +
-      //      "Result: " + result.text + "\n" +
-      //      "Format: " + result.format + "\n" +
-      //      "Cancelled: " + result.cancelled);
-      //  },
-      //  function (error) {
-      //    alert("Scanning failed: " + error);
-      //  }
-      //);
-      $location.path('/payment/input');
+      cordova.plugins.barcodeScanner.scan(
+        function (result) {
+          alert("We got a barcode\n" +
+            "Result: " + result.text + "\n" +
+            "Format: " + result.format + "\n" +
+            "Cancelled: " + result.cancelled);
+        },
+        function (error) {
+          alert("Scanning failed: " + error);
+        }
+      );
+      //$location.path('/payment/input');
     }
   })
 
