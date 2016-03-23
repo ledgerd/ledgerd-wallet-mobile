@@ -12,7 +12,7 @@ angular.module('starter.controllers', ['ionic'])
     }
   })
 
-.controller('DashCtrl', function($scope,$location,$state) {
+.controller('DashCtrl', function($scope,$location,$state,$ionicLoading) {
     //如果未登录跳转到登录
     if(!localStorage.getItem('publicKey')){
       $location.path('/auth/open');
@@ -34,6 +34,7 @@ angular.module('starter.controllers', ['ionic'])
     });
 
     //获取账户余额
+    $ionicLoading.show({template: '查询余额...'});
     conn.then(function(){
       api.getServerInfo().then(function(info){
         api.getBalances($scope.publicKey,{ledgerVersion:info.validatedLedger.ledgerVersion-1}).then(function(balances) {
@@ -67,6 +68,7 @@ angular.module('starter.controllers', ['ionic'])
             }
           });//forEach
           $scope.items = items;
+          $ionicLoading.hide();
           console.log(items);
         })
       })
@@ -84,7 +86,7 @@ angular.module('starter.controllers', ['ionic'])
           alert("扫描失败: " + error);
         }
       );
-      //$location.path('/payment/input');
+      //$state.go('payment.input',{address:'rUBJSUTZRniy9Kpg4ZPKXFQHB5o19ZTFtM'});
     }
   })
 
@@ -169,8 +171,8 @@ angular.module('starter.controllers', ['ionic'])
 
     $scope.pay=function(path){
       const payment = {
-        source: fund.source,
-        destination: fund.destination
+        source: path.source,
+        destination: path.destination
       };
       $ionicLoading.show({template: '转账中...'});
       api.preparePayment(localStorage.getItem('publicKey'), payment).then(function(prepared){
