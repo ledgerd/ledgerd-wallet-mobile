@@ -1,92 +1,99 @@
-angular.module('starter.controllers', ['ionic'])
+angular.module('starter.controllers', ['ionic','monospaced.qrcode'])
 
-  .controller('OpenCtrl', function($scope,$location) {
+  .controller('OpenCtrl', function($scope,$state) {
     if(localStorage.getItem('publicKey')){
-      $location.path('/payment/dash');
-    }
-    $scope.openWallet = function(){
-      $scope.publicKey = (new RippleAddress($scope.privateKey)).getAddress();
-      localStorage.setItem('publicKey',$scope.publicKey);
-      localStorage.setItem('privateKey',$scope.privateKey);
-      $location.path('/payment/dash');
+      $state.go('payment.dash');
+    }else {
+      $scope.openWallet = function () {
+        $scope.publicKey = (new RippleAddress($scope.privateKey)).getAddress();
+        localStorage.setItem('publicKey', $scope.publicKey);
+        localStorage.setItem('privateKey', $scope.privateKey);
+        $state.go('payment.dash');
+      }
     }
   })
 
-.controller('DashCtrl', function($scope,$location,$state,$ionicLoading) {
+.controller('DashCtrl', function($scope,$state,$ionicLoading,$timeout) {
     //如果未登录跳转到登录
     if(!localStorage.getItem('publicKey')){
-      $location.path('/auth/open');return;
-    }
-    //退出登录
-    $scope.logout = function(){
-      localStorage.removeItem('publicKey');
-      localStorage.removeItem('privateKey');
-      $location.path('/auth/open');
-    }
+      $state.go('auth.open');
+    }else {
+      //退出登录
+      $scope.logout = function () {
+        localStorage.removeItem('publicKey');
+        localStorage.removeItem('privateKey');
+        $state.go('auth.open');
+      }
 
-    $scope.publicKey = localStorage.getItem('publicKey');
-    new QRCode(document.getElementById("qrcode"),{
-      text:$scope.publicKey,
-      width: 200,
-      height: 200,
-      colorDark : "#333333",
-      colorLight : "#ffffff",
-    });
+      $scope.publicKey = localStorage.getItem('publicKey');
+      //$scope.$watch('publicKey',function (newValue,oldValue) {
+      //  //if(newValue != oldValue) {
+      //    console.log(document.getElementById("qrcode"));
+      //    new QRCode(document.getElementById("qrcode"), {
+      //      text: $scope.publicKey,
+      //      width: 200,
+      //      height: 200,
+      //      colorDark: "#333333",
+      //      colorLight: "#ffffff",
+      //    });
+      //  //}
+      //},true);
 
-    //获取账户余额
-    $ionicLoading.show({template: '查询余额...'});
-    conn.then(function(){
-      api.getServerInfo().then(function(info){
-        api.getBalances($scope.publicKey,{ledgerVersion:info.validatedLedger.ledgerVersion-1}).then(function(balances) {
-          var items = [];
-          balances.forEach(function (balance) {
-            var index = -1;
-            for(i=0;i<items.length;i++){
-              if(items[i].currency == balance.currency){
-                index = i;
-                break;
+      //获取账户余额
+      $ionicLoading.show({template: '查询余额...'});
+      conn.then(function () {
+        api.getServerInfo().then(function (info) {
+          api.getBalances($scope.publicKey, {ledgerVersion: info.validatedLedger.ledgerVersion - 1}).then(function (balances) {
+            var items = [];
+            balances.forEach(function (balance) {
+              var index = -1;
+              for (i = 0; i < items.length; i++) {
+                if (items[i].currency == balance.currency) {
+                  index = i;
+                  break;
+                }
               }
-            }
-            //var index = items.indexOf(balance.currency);
-            if (index == -1) {//如果不含同种币
-              var item = {
-              currency: balance.currency,
-              fund: Number(balance.value),
-              banks: [{
-                value: balance.value,
-                counterparty: balance.counterparty
-              }]
+              //var index = items.indexOf(balance.currency);
+              if (index == -1) {//如果不含同种币
+                var item = {
+                  currency: balance.currency,
+                  fund: Number(balance.value),
+                  banks: [{
+                    value: balance.value,
+                    counterparty: balance.counterparty
+                  }]
+                }
+                items.push(item);
+              } else {//已经存在同种币
+                var item = items[index];
+                item.fund += Number(balance.value);
+                item.banks.push({
+                  value: balance.value,
+                  counterparty: balance.counterparty
+                });
               }
-              items.push(item);
-            } else {//已经存在同种币
-              var item = items[index];
-              item.fund += Number(balance.value);
-              item.banks.push({
-                value: balance.value,
-                counterparty: balance.counterparty
-              });
-            }
-          });//forEach
-          $scope.items = items;
-          $ionicLoading.hide();
-          console.log(items);
+            });//forEach
+            $scope.items = items;
+            $ionicLoading.hide();
+            console.log(items);
+          })
         })
-      })
-    });
+      });
 
-    //向他人付款功能
-    $scope.scanPayment=function(){
-      cordova.plugins.barcodeScanner.scan(
-        function (result) {
-          if(!result.cancelled){
-            $state.go('payment.input',{address:result.text})
+      //向他人付款功能
+      $scope.scanPayment = function () {
+        cordova.plugins.barcodeScanner.scan(
+          function (result) {
+            if (!result.cancelled) {
+              $state.go('payment.input', {address: result.text})
+            }
+          },
+          function (error) {
+            alert("扫描失败: " + error);
           }
-        },
-        function (error) {
-          alert("扫描失败: " + error);
-        }
-      );
-      //$state.go('payment.input',{address:'rUBJSUTZRniy9Kpg4ZPKXFQHB5o19ZTFtM'});
+        );
+        //$state.go('payment.input',{address:'rUBJSUTZRniy9Kpg4ZPKXFQHB5o19ZTFtM'});
+      }
     }
   })
 

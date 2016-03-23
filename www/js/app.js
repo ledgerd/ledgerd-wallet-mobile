@@ -59,6 +59,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
 
   .state('payment.dash', {
     url: '/dash',
+      cache: false,
     views: {
       'payment': {
         templateUrl: 'templates/payment-dash.html',

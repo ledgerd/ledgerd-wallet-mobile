@@ -11,8 +11,9 @@
         <p>{{publicKey}}</p>
       </div>
 
-      <div id="qrcode" class="item item-body" style="text-align: center;">
+      <div class="item item-body" style="text-align: center;">
         <p>扫码向我付款</p>
+        <qrcode version="4" error-correction-level="M" size="200" data="{{publicKey}}" download></qrcode>
       </div>
 
       <a class="item item-icon-left" href="#/payment/transaction">
