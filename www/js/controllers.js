@@ -1,4 +1,4 @@
-angular.module('starter.controllers', [])
+angular.module('starter.controllers', ['ionic'])
 
   .controller('OpenCtrl', function($scope,$location) {
     if(localStorage.getItem('publicKey')){
@@ -76,7 +76,9 @@ angular.module('starter.controllers', [])
     $scope.scanPayment=function(){
       cordova.plugins.barcodeScanner.scan(
         function (result) {
-          $state.go('payment.input',{address:result.text})
+          if(!result.cancelled){
+            $state.go('payment.input',{address:result.text})
+          }
         },
         function (error) {
           alert("扫描失败: " + error);
@@ -86,7 +88,7 @@ angular.module('starter.controllers', [])
     }
   })
 
-  .controller('InputCtrl',function($scope,$location,$stateParams) {
+  .controller('InputCtrl',function($scope,$location,$stateParams,$ionicLoading) {
     $scope.send = {};
     $scope.send.address = $stateParams.address;
     $scope.send.value= '1';
@@ -102,6 +104,7 @@ angular.module('starter.controllers', [])
     //计算要支付货币的路径
     $scope.findPath = function () {
       $scope.status_text='计算支付路径...';
+      $ionicLoading.show({template: '正在计算支付路径...'});
       var findpath = {
         source: {
           address: localStorage.getItem('publicKey')
@@ -119,8 +122,9 @@ angular.module('starter.controllers', [])
       }
       api.getPaths(findpath).then(function (pass, fail) {
         $scope.status_text='';
+        $ionicLoading.hide();
         console.log('path',pass);
-        $scope.funds=pass;
+        $scope.paths=pass;
       });
     }
 
@@ -140,12 +144,16 @@ angular.module('starter.controllers', [])
 
     //获取服务器信息以查询对方要可接收的货币
     $scope.status_text='查询可接收币种...';
+    $ionicLoading.show({template: '正在查询可接收币种...'});
     conn.then(function(){
-      $scope.status_text='成功连接服务器';
+      $scope.status_text='成功连接到支付网络！';
+      $ionicLoading.show({template: '成功连接到支付网络！'});
       api.getServerInfo().then(function(info){
         $scope.status_text='成功获取服务器信息，开始查询信任线...';
+        $ionicLoading.show({template: '成功获取服务器信息，开始查询信任线...'});
         api.getTrustlines($scope.send.address,{ledgerVersion:info.validatedLedger.ledgerVersion-1}).then(function (trustlines) {
-          $scope.status_text='成功获取到信任线';
+          $scope.status_text='成功获取到信任线！';
+          $ionicLoading.show({template: '成功获取到信任线！'});
           //console.log('trustlines',trustlines);
           trustlines.forEach(function (trustline) {
             $scope.amount.push({
@@ -157,9 +165,26 @@ angular.module('starter.controllers', [])
           $scope.findPath();
         });
       })
-    })
+    });
 
-    $scope.pay=function(fund){
-
+    $scope.pay=function(path){
+      const payment = {
+        source: fund.source,
+        destination: fund.destination
+      };
+      $ionicLoading.show({template: '转账中...'});
+      api.preparePayment(localStorage.getItem('publicKey'), payment).then(function(prepared){
+        var signed = api.sign(prepared.txJSON,localStorage.getItem('privateKey'));
+        api.submit(signed.signedTransaction).then(function(result){
+          if(result.resultCode == 'tesSUCCESS'){
+            $ionicLoading.hide();
+            alert('转账成功！');
+            $location.path('/payment/dash');
+          }else{
+            $ionicLoading.hide();
+            alert(result.resultCode+'->'+ result.resultMessage);
+          }
+        });
+      });
     }
   });

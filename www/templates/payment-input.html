@@ -19,13 +19,13 @@
 
     <div>{{status_text}}</div>
 
-    <div class="card" ng-repeat="fund in funds">
+    <div class="card" ng-repeat="path in paths">
       <div class="item item-text-wrap">
-        <h3>{{fund.source.maxAmount.value}} {{fund.source.maxAmount.currency}}</h3>
+        <h3>{{path.source.maxAmount.value}} {{path.source.maxAmount.currency}}</h3>
       </div>
       <div class="item item-divider">
-        <button class="button button-block button-positive" ng-click="pay(fund)">
-        用{{fund.source.maxAmount.currency}}支付
+        <button class="button button-block button-positive" ng-click="pay(path)">
+        用{{path.source.maxAmount.currency}}支付
         </button>
       </div>
     </div>
