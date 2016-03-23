@@ -15,7 +15,7 @@ angular.module('starter.controllers', ['ionic'])
 .controller('DashCtrl', function($scope,$location,$state,$ionicLoading) {
     //如果未登录跳转到登录
     if(!localStorage.getItem('publicKey')){
-      $location.path('/auth/open');
+      $location.path('/auth/open');return;
     }
     //退出登录
     $scope.logout = function(){
