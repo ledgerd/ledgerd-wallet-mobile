@@ -60,7 +60,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
   .state('payment.dash', {
     url: '/dash',
     views: {
-      'payment-dash': {
+      'payment': {
         templateUrl: 'templates/payment-dash.html',
         controller: 'DashCtrl'
       }
@@ -70,7 +70,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
     .state('payment.input', {
       url: '/input/:address',
       views: {
-        'payment-dash': {
+        'payment': {
           templateUrl: 'templates/payment-input.html',
           controller: 'InputCtrl'
         }
@@ -80,7 +80,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
     .state('payment.transaction',{
       url:'/transaction',
       views:{
-        'payment-transaction':{
+        'payment':{
           templateUrl: 'templates/payment-transaction.html',
           controller: 'TransactionCtrl'
         }

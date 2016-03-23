@@ -188,7 +188,7 @@ angular.module('starter.controllers', ['ionic'])
       });
     }
   })
-  .controller('TransactionCtrl',function($scope,$ionicLoading){
+  .controller('TransactionCtrl',function($scope,$ionicLoading,$ionicHistory,$state){
     $scope.publicKey = localStorage.getItem('publicKey');
     $ionicLoading.show({template: '查询中...'});
     conn.then(function() {
