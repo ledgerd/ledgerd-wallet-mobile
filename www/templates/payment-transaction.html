@@ -1,0 +1,17 @@
+<ion-view view-title="Ledgerd Wallet">
+  <ion-nav-back-button></ion-nav-back-button>
+  <ion-content>
+    <ul class="list">
+      <li class="item" ng-repeat="item in items" ng-if="item.specification.source.address == publicKey || item.specification.destination.address == publicKey">
+        <div ng-if="item.specification.source.address == publicKey">
+          <i>支出</i>
+          <span class="badge badge-assertive">-{{item.specification.source.maxAmount.value}} {{item.specification.source.maxAmount.currency}}</span>
+        </div>
+        <div ng-if="item.specification.destination.address == publicKey">
+          <i>收入</i>
+          <span class="badge badge-assertive">{{item.specification.destination.amount.value}} {{item.specification.destination.amount.currency}}</span>
+        </div>
+      </li>
+    </ul>
+  </ion-content>
+</ion-view>

@@ -187,4 +187,21 @@ angular.module('starter.controllers', ['ionic'])
         });
       });
     }
+  })
+  .controller('TransactionCtrl',function($scope,$ionicLoading){
+    $scope.publicKey = localStorage.getItem('publicKey');
+    $ionicLoading.show({template: '查询中...'});
+    conn.then(function() {
+      api.getServerInfo().then(function(info) {
+        api.getTransactions(localStorage.getItem('publicKey'), {
+          //maxLedgerVersion:info.validatedLedger.ledgerVersion-1,
+          minLedgerVersion:info.validatedLedger.ledgerVersion-680000,
+          types: ['payment']
+        }).then(function (transactions) {
+          $ionicLoading.hide();
+          $scope.items = transactions;
+          console.log(transactions);
+        });
+      });
+    });
   });

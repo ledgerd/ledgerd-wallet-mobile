@@ -77,6 +77,16 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
       }
     })
 
+    .state('payment.transaction',{
+      url:'/transaction',
+      views:{
+        'payment-transaction':{
+          templateUrl: 'templates/payment-transaction.html',
+          controller: 'TransactionCtrl'
+        }
+      }
+    })
+
   // if none of the above states are matched, use this as the fallback
   $urlRouterProvider.otherwise('/payment/dash');
 
