@@ -28,7 +28,7 @@
     <script src="lib/ripple-orderbook.js"></script>
     <script src="lib/ripple.js"></script>
     <script>
-      var api = new ripple.RippleAPI({server:'ws://180.76.183.103:443'});
+      var api = new ripple.RippleAPI({server:'ws://s1.ledgerd.com:443'});
       var conn = api.connect().then(function(){
         console.log('已连接');
       });

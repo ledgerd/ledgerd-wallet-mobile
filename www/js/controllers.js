@@ -101,13 +101,13 @@ angular.module('starter.controllers', ['ionic','monospaced.qrcode'])
     $scope.send = {};
     $scope.send.address = $stateParams.address;
     $scope.send.value= '1';
-    var xrpAmount={
-      currency: 'XRP',
+    var lgdAmount={
+      currency: 'LGD',
       value: $scope.send.value
     }
-    $scope.send.amount=xrpAmount;
+    $scope.send.amount=lgdAmount;
     $scope.amount = [];
-    $scope.amount.push(xrpAmount);
+    $scope.amount.push(lgdAmount);
     //var send = $scope.send;
 
     //计算要支付货币的路径
