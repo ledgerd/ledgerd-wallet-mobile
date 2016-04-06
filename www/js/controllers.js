@@ -198,13 +198,16 @@ angular.module('starter.controllers', ['ionic','monospaced.qrcode'])
     }
   })
   .controller('TransactionCtrl',function($scope,$ionicLoading,$ionicHistory,$state){
+
     $scope.publicKey = localStorage.getItem('publicKey');
     $ionicLoading.show({template: '查询中...'});
     conn.then(function() {
       api.getServerInfo().then(function(info) {
+        var minLedgerVersion = info.validatedLedger.ledgerVersion-680000;
+        minLedgerVersion = minLedgerVersion<3?3:minLedgerVersion;
         api.getTransactions(localStorage.getItem('publicKey'), {
           //maxLedgerVersion:info.validatedLedger.ledgerVersion-1,
-          minLedgerVersion:info.validatedLedger.ledgerVersion-680000,
+          //minLedgerVersion:minLedgerVersion,
           types: ['payment']
         }).then(function (transactions) {
           $ionicLoading.hide();
