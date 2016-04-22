@@ -41,9 +41,19 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
     .state('auth.open', {
       url: '/open',
       views: {
-        'auth-open': {
+        'auth': {
           templateUrl: 'templates/auth-open.html',
           controller: 'OpenCtrl'
+        }
+      }
+    })
+
+    .state('auth.create',{
+      url:'/create',
+      views:{
+        'auth':{
+          templateUrl:'templates/auth-create.html',
+          controller:'CreateCtrl'
         }
       }
     })

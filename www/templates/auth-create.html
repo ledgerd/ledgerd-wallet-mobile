@@ -1,0 +1,27 @@
+<ion-view view-title="Ledgerd Wallet">
+  <ion-nav-back-button></ion-nav-back-button>
+  <ion-content class="padding">
+    <div class="card">
+      <div class="item item-divider">
+        账号
+      </div>
+      <div class="item item-text-wrap" on-hold="copyLedgerd(ledgerd.address)">
+        {{ledgerd.address}}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="item item-divider">
+        密钥
+      </div>
+      <div class="item item-text-wrap" on-hold="copyLedgerd(ledgerd.secret)">
+        {{ledgerd.secret}}
+      </div>
+    </div>
+
+    <p>密钥是打开账号的重要凭据，任何拥有该秘钥的人可以取出你的钱，所以请将它保管在安全的地方。</p>
+
+    <button class="button button-block button-positive" ng-click="openWallet()">已保存好密钥，进入账户</button>
+
+  </ion-content>
+</ion-view>

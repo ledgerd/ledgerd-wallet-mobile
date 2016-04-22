@@ -1,4 +1,4 @@
-angular.module('starter.controllers', ['ionic','monospaced.qrcode'])
+angular.module('starter.controllers', ['ionic','monospaced.qrcode','ngCordova'])
 
   .controller('OpenCtrl', function($scope,$state) {
     if(localStorage.getItem('publicKey')){
@@ -13,7 +13,29 @@ angular.module('starter.controllers', ['ionic','monospaced.qrcode'])
     }
   })
 
-.controller('DashCtrl', function($scope,$state,$ionicLoading,$timeout) {
+  .controller('CreateCtrl',function($scope,$state,$cordovaClipboard) {
+    if (localStorage.getItem('publicKey')) {
+      $state.go('payment.dash');
+    } else {
+      //生成secret和address
+      $scope.ledgerd = api.generateAddress();
+      $scope.openWallet = function () {
+        localStorage.setItem('publicKey', $scope.ledgerd.address);
+        localStorage.setItem('privateKey', $scope.ledgerd.secret);
+        $state.go('payment.dash');
+      }
+
+      $scope.copyLedgerd = function(text){
+        $cordovaClipboard.copy(text).then(function(){
+          alert('已复制');
+        },function(){
+          alert('复制失败');
+        });
+      }
+    }
+  })
+
+.controller('DashCtrl', function($scope,$state,$ionicLoading,$timeout,$cordovaClipboard) {
     //如果未登录跳转到登录
     if(!localStorage.getItem('publicKey')){
       $state.go('auth.open');
@@ -26,6 +48,14 @@ angular.module('starter.controllers', ['ionic','monospaced.qrcode'])
       }
 
       $scope.publicKey = localStorage.getItem('publicKey');
+
+      $scope.copyAddress = function(){
+        $cordovaClipboard.copy($scope.publicKey).then(function(){
+          alert('已复制');
+        },function(){
+          alert('复制失败');
+        });
+      }
 
       //获取账户余额
       $ionicLoading.show({template: '查询余额...'});
@@ -193,8 +223,8 @@ angular.module('starter.controllers', ['ionic','monospaced.qrcode'])
       api.getLedger().then(function(ledger){
         console.log(ledger);
         api.getTransactions(localStorage.getItem('publicKey'), {
-          maxLedgerVersion:20532,
-          minLedgerVersion:182,
+          maxLedgerVersion:ledger.ledgerVersion,
+          minLedgerVersion:1,
           types: ['payment']
         }).then(function (transactions) {
           $ionicLoading.hide();
