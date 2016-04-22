@@ -26,18 +26,6 @@ angular.module('starter.controllers', ['ionic','monospaced.qrcode'])
       }
 
       $scope.publicKey = localStorage.getItem('publicKey');
-      //$scope.$watch('publicKey',function (newValue,oldValue) {
-      //  //if(newValue != oldValue) {
-      //    console.log(document.getElementById("qrcode"));
-      //    new QRCode(document.getElementById("qrcode"), {
-      //      text: $scope.publicKey,
-      //      width: 200,
-      //      height: 200,
-      //      colorDark: "#333333",
-      //      colorLight: "#ffffff",
-      //    });
-      //  //}
-      //},true);
 
       //获取账户余额
       $ionicLoading.show({template: '查询余额...'});
@@ -202,12 +190,11 @@ angular.module('starter.controllers', ['ionic','monospaced.qrcode'])
     $scope.publicKey = localStorage.getItem('publicKey');
     $ionicLoading.show({template: '查询中...'});
     conn.then(function() {
-      api.getServerInfo().then(function(info) {
-        var minLedgerVersion = info.validatedLedger.ledgerVersion-680000;
-        minLedgerVersion = minLedgerVersion<3?3:minLedgerVersion;
+      api.getLedger().then(function(ledger){
+        console.log(ledger);
         api.getTransactions(localStorage.getItem('publicKey'), {
-          //maxLedgerVersion:info.validatedLedger.ledgerVersion-1,
-          //minLedgerVersion:minLedgerVersion,
+          maxLedgerVersion:20532,
+          minLedgerVersion:182,
           types: ['payment']
         }).then(function (transactions) {
           $ionicLoading.hide();
@@ -215,5 +202,19 @@ angular.module('starter.controllers', ['ionic','monospaced.qrcode'])
           console.log(transactions);
         });
       });
+      //api.getServerInfo().then(function(info) {
+      //  console.log(info);
+      //  var minLedgerVersion = info.validatedLedger.ledgerVersion-100000;
+      //  minLedgerVersion = minLedgerVersion<182?182:minLedgerVersion;
+      //  api.getTransactions(localStorage.getItem('publicKey'), {
+      //    maxLedgerVersion:info.validatedLedger.ledgerVersion-1,
+      //    minLedgerVersion:minLedgerVersion,
+      //    types: ['payment']
+      //  }).then(function (transactions) {
+      //    $ionicLoading.hide();
+      //    $scope.items = transactions;
+      //    console.log(transactions);
+      //  });
+      //});
     });
   });

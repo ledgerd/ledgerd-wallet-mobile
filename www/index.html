@@ -25,8 +25,8 @@
     <script src="util/base58.js"></script>
     <script src="util/types.js"></script>
     <script src="lib/lodash.js"></script>
-    <script src="lib/ripple-orderbook.js"></script>
-    <script src="lib/ripple.js"></script>
+    <script src="lib/ledgerd-orderbook.js"></script>
+    <script src="lib/ledgerd.js"></script>
     <script>
       var api = new ripple.RippleAPI({server:'ws://s1.ledgerd.com:443'});
       var conn = api.connect().then(function(){
