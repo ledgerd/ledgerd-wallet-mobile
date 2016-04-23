@@ -58,6 +58,7 @@ angular.module('starter.controllers', ['ionic','monospaced.qrcode','ngCordova'])
       }
 
       //获取账户余额
+      $scope.items = [];
       $ionicLoading.show({template: '查询余额...'});
       conn.then(function () {
         api.getServerInfo().then(function (info) {
@@ -94,23 +95,27 @@ angular.module('starter.controllers', ['ionic','monospaced.qrcode','ngCordova'])
             $scope.items = items;
             $ionicLoading.hide();
             console.log(items);
-          })
+          }).catch($ionicLoading.hide());
         })
       });
 
       //向他人付款功能
       $scope.scanPayment = function () {
-        cordova.plugins.barcodeScanner.scan(
-          function (result) {
-            if (!result.cancelled) {
-              $state.go('payment.input', {address: result.text})
+        if ($scope.items.length) {
+          cordova.plugins.barcodeScanner.scan(
+            function (result) {
+              if (!result.cancelled) {
+                $state.go('payment.input', {address: result.text})
+              }
+            },
+            function (error) {
+              alert("扫描失败: " + error);
             }
-          },
-          function (error) {
-            alert("扫描失败: " + error);
-          }
-        );
-        //$state.go('payment.input',{address:'rUBJSUTZRniy9Kpg4ZPKXFQHB5o19ZTFtM'});
+          );
+          //$state.go('payment.input',{address:'rUBJSUTZRniy9Kpg4ZPKXFQHB5o19ZTFtM'});
+        } else {
+          alert('账户余额不足，无法进行支付');
+        }
       }
     }
   })
