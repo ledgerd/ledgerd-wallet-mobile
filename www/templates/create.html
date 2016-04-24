@@ -1,11 +1,10 @@
 <ion-view view-title="Ledgerd Wallet">
-  <ion-nav-back-button></ion-nav-back-button>
   <ion-content class="padding">
     <div class="card">
       <div class="item item-divider">
         账号
       </div>
-      <div class="item item-text-wrap" on-hold="copyLedgerd(ledgerd.address)">
+      <div class="item item-text-wrap selectable">
         {{ledgerd.address}}
       </div>
     </div>
@@ -14,7 +13,7 @@
       <div class="item item-divider">
         密钥
       </div>
-      <div class="item item-text-wrap" on-hold="copyLedgerd(ledgerd.secret)">
+      <div class="item item-text-wrap selectable">
         {{ledgerd.secret}}
       </div>
     </div>

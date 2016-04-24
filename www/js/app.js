@@ -30,32 +30,16 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
   // Set up the various states which the app can be in.
   // Each state's controller can be found in controllers.js
   $stateProvider
-
-    // setup an abstract state for the tabs directive
-    .state('auth', {
-      url: '/auth',
-      abstract: true,
-      templateUrl: 'templates/auth.html'
-    })
-
-    .state('auth.open', {
+    .state('open', {
       url: '/open',
-      views: {
-        'auth': {
-          templateUrl: 'templates/auth-open.html',
-          controller: 'OpenCtrl'
-        }
-      }
+      templateUrl: 'templates/open.html',
+      controller: 'OpenCtrl'
     })
 
-    .state('auth.create',{
+    .state('create',{
       url:'/create',
-      views:{
-        'auth':{
-          templateUrl:'templates/auth-create.html',
-          controller:'CreateCtrl'
-        }
-      }
+      templateUrl:'templates/create.html',
+      controller:'CreateCtrl'
     })
 
   // setup an abstract state for the tabs directive

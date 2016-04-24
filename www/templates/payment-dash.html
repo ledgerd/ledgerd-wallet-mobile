@@ -5,15 +5,15 @@
   <ion-content class="padding">
     <div class="list card">
 
-      <div class="item item-avatar" on-hold="copyAddress()">
+      <div class="item item-avatar">
         <img src="img/logo.png">
         <h2>钱包地址</h2>
-        <p>{{publicKey}}</p>
+        <p class="selectable">{{account.address}}</p>
       </div>
 
       <div class="item item-body" style="text-align: center;">
         <p>扫码向我付款</p>
-        <qrcode version="4" error-correction-level="M" size="200" data="{{publicKey}}"></qrcode>
+        <qrcode version="4" error-correction-level="M" size="200" data="{{account.address}}"></qrcode>
       </div>
 
       <a class="item item-icon-left" href="#/payment/transaction">

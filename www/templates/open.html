@@ -1,5 +1,4 @@
 <ion-view view-title="Ledgerd Wallet">
-  <ion-nav-back-button></ion-nav-back-button>
   <ion-content class="padding">
     <div style="text-align: center;">
       <img src="img/logo-ledgerd.png" style="margin-top: 80px;height: 60px; margin-bottom: 40px;" />
@@ -7,14 +6,14 @@
 
     <div class="list list-inset">
       <label class="item item-input">
-        <input type="text" placeholder="请输入s开头的密钥" ng-model="privateKey">
+        <input type="text" placeholder="请输入s开头的密钥" ng-model="account.secret">
       </label>
     </div>
 
-    <button class="button button-block button-positive" ng-click="openWallet()">打开账户</button>
+    <button class="button button-block button-positive" ng-click="openWallet(account)">打开账户</button>
 
     <div style="text-align: center;">
-      <a href="#/auth/create">创建新账户</a>
+      <a href="#/create">创建新账户</a>
     </div>
   </ion-content>
 </ion-view>

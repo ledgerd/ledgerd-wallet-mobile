@@ -1,60 +1,64 @@
-angular.module('starter.controllers', ['ionic','monospaced.qrcode','ngCordova'])
+angular.module('starter.controllers', ['ionic','monospaced.qrcode'])
 
-  .controller('OpenCtrl', function($scope,$state) {
-    if(localStorage.getItem('publicKey')){
+  .controller('OpenCtrl', function($scope,$state,$ionicPopup) {
+    if(localStorage.getItem('secret') && localStorage.getItem('address')){
       $state.go('payment.dash');
     }else {
-      $scope.openWallet = function () {
-        $scope.publicKey = (new RippleAddress($scope.privateKey)).getAddress();
-        localStorage.setItem('publicKey', $scope.publicKey);
-        localStorage.setItem('privateKey', $scope.privateKey);
-        $state.go('payment.dash');
+      $scope.openWallet = function (account) {
+        console.log(account);
+        try {
+          var address = (new RippleAddress(account.secret)).getAddress();
+          localStorage.setItem('address', address);
+          localStorage.setItem('secret', account.secret);
+          $state.go('payment.dash');
+        }catch(ex){
+          $ionicPopup.alert({
+            title: '错误',
+            template: '请输入正确的密钥'
+          });
+        }
       }
     }
   })
 
-  .controller('CreateCtrl',function($scope,$state,$cordovaClipboard) {
-    if (localStorage.getItem('publicKey')) {
+  .controller('CreateCtrl',function($scope,$state,$ionicPopup) {
+    if (localStorage.getItem('address')) {
       $state.go('payment.dash');
     } else {
       //生成secret和address
       $scope.ledgerd = api.generateAddress();
       $scope.openWallet = function () {
-        localStorage.setItem('publicKey', $scope.ledgerd.address);
-        localStorage.setItem('privateKey', $scope.ledgerd.secret);
+        localStorage.setItem('address', $scope.ledgerd.address);
+        localStorage.setItem('secret', $scope.ledgerd.secret);
         $state.go('payment.dash');
       }
 
       $scope.copyLedgerd = function(text){
-        $cordovaClipboard.copy(text).then(function(){
-          alert('已复制');
-        },function(){
-          alert('复制失败');
-        });
+
       }
     }
   })
 
-.controller('DashCtrl', function($scope,$state,$ionicLoading,$timeout,$cordovaClipboard) {
+.controller('DashCtrl', function($scope,$state,$ionicLoading,$timeout,$ionicPopup) {
     //如果未登录跳转到登录
-    if(!localStorage.getItem('publicKey')){
-      $state.go('auth.open');
+    if(!localStorage.getItem('secret')){
+      $state.go('open');
     }else {
       //退出登录
       $scope.logout = function () {
-        localStorage.removeItem('publicKey');
-        localStorage.removeItem('privateKey');
-        $state.go('auth.open');
+        localStorage.removeItem('secret');
+        localStorage.removeItem('address');
+        $state.go('open');
       }
 
-      $scope.publicKey = localStorage.getItem('publicKey');
+      var account = {
+        address : localStorage.getItem('address'),
+        secret : localStorage.getItem('secret')
+      };
+      $scope.account = account;
 
       $scope.copyAddress = function(){
-        $cordovaClipboard.copy($scope.publicKey).then(function(){
-          alert('已复制');
-        },function(){
-          alert('复制失败');
-        });
+
       }
 
       //获取账户余额
@@ -62,7 +66,7 @@ angular.module('starter.controllers', ['ionic','monospaced.qrcode','ngCordova'])
       $ionicLoading.show({template: '查询余额...'});
       conn.then(function () {
         api.getServerInfo().then(function (info) {
-          api.getBalances($scope.publicKey, {ledgerVersion: info.validatedLedger.ledgerVersion - 1}).then(function (balances) {
+          api.getBalances(account.address, {ledgerVersion: info.validatedLedger.ledgerVersion - 1}).then(function (balances) {
             var items = [];
             balances.forEach(function (balance) {
               var index = -1;
@@ -109,12 +113,18 @@ angular.module('starter.controllers', ['ionic','monospaced.qrcode','ngCordova'])
               }
             },
             function (error) {
-              alert("扫描失败: " + error);
+              $ionicPopup.alert({
+                title: '扫描失败',
+                template: error
+              });
             }
           );
           //$state.go('payment.input',{address:'rUBJSUTZRniy9Kpg4ZPKXFQHB5o19ZTFtM'});
         } else {
-          alert('账户余额不足，无法进行支付');
+          $ionicPopup.alert({
+            title: '失败',
+            template: '账户余额不足，无法进行支付'
+          });
         }
       }
     }
@@ -139,7 +149,7 @@ angular.module('starter.controllers', ['ionic','monospaced.qrcode','ngCordova'])
       $ionicLoading.show({template: '正在计算支付路径...'});
       var findpath = {
         source: {
-          address: localStorage.getItem('publicKey')
+          address: localStorage.getItem('address')
         },
         destination: {
           address: $scope.send.address,
@@ -205,8 +215,8 @@ angular.module('starter.controllers', ['ionic','monospaced.qrcode','ngCordova'])
         destination: path.destination
       };
       $ionicLoading.show({template: '转账中...'});
-      api.preparePayment(localStorage.getItem('publicKey'), payment).then(function(prepared){
-        var signed = api.sign(prepared.txJSON,localStorage.getItem('privateKey'));
+      api.preparePayment(localStorage.getItem('address'), payment).then(function(prepared){
+        var signed = api.sign(prepared.txJSON,localStorage.getItem('secret'));
         api.submit(signed.signedTransaction).then(function(result){
           if(result.resultCode == 'tesSUCCESS'){
             $ionicLoading.hide();
@@ -222,12 +232,12 @@ angular.module('starter.controllers', ['ionic','monospaced.qrcode','ngCordova'])
   })
   .controller('TransactionCtrl',function($scope,$ionicLoading,$ionicHistory,$state){
 
-    $scope.publicKey = localStorage.getItem('publicKey');
+    $scope.address = localStorage.getItem('address');
     $ionicLoading.show({template: '查询中...'});
     conn.then(function() {
       api.getLedger().then(function(ledger){
         console.log(ledger);
-        api.getTransactions(localStorage.getItem('publicKey'), {
+        api.getTransactions(localStorage.getItem('address'), {
           maxLedgerVersion:ledger.ledgerVersion,
           minLedgerVersion:1,
           types: ['payment']
@@ -237,19 +247,5 @@ angular.module('starter.controllers', ['ionic','monospaced.qrcode','ngCordova'])
           console.log(transactions);
         });
       });
-      //api.getServerInfo().then(function(info) {
-      //  console.log(info);
-      //  var minLedgerVersion = info.validatedLedger.ledgerVersion-100000;
-      //  minLedgerVersion = minLedgerVersion<182?182:minLedgerVersion;
-      //  api.getTransactions(localStorage.getItem('publicKey'), {
-      //    maxLedgerVersion:info.validatedLedger.ledgerVersion-1,
-      //    minLedgerVersion:minLedgerVersion,
-      //    types: ['payment']
-      //  }).then(function (transactions) {
-      //    $ionicLoading.hide();
-      //    $scope.items = transactions;
-      //    console.log(transactions);
-      //  });
-      //});
     });
   });
