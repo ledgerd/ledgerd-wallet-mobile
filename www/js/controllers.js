@@ -105,6 +105,8 @@ angular.module('starter.controllers', ['ionic','monospaced.qrcode'])
 
       //向他人付款功能
       $scope.scanPayment = function () {
+        //$state.go('payment.input',{address:'rGyr8CauR458A1efcVLHV5Bcs9PaiEVEJt'});//亿石的总账号
+        //$state.go('payment.input',{address:'rEDQGsaPTNKMp9JomYhKsVS7VCjSaGaPWu'});//雍自飞
         if ($scope.items.length) {
           cordova.plugins.barcodeScanner.scan(
             function (result) {
@@ -119,7 +121,6 @@ angular.module('starter.controllers', ['ionic','monospaced.qrcode'])
               });
             }
           );
-          //$state.go('payment.input',{address:'rUBJSUTZRniy9Kpg4ZPKXFQHB5o19ZTFtM'});
         } else {
           $ionicPopup.alert({
             title: '失败',
@@ -133,7 +134,6 @@ angular.module('starter.controllers', ['ionic','monospaced.qrcode'])
   .controller('InputCtrl',function($scope,$location,$stateParams,$ionicLoading) {
     $scope.send = {};
     $scope.send.address = $stateParams.address;
-    $scope.send.value= '1';
     var lgdAmount={
       currency: 'LGD',
       value: $scope.send.value
@@ -141,62 +141,46 @@ angular.module('starter.controllers', ['ionic','monospaced.qrcode'])
     $scope.send.amount=lgdAmount;
     $scope.amount = [];
     $scope.amount.push(lgdAmount);
-    //var send = $scope.send;
 
     //计算要支付货币的路径
     $scope.findPath = function () {
-      $scope.status_text='计算支付路径...';
-      $ionicLoading.show({template: '正在计算支付路径...'});
-      var findpath = {
-        source: {
-          address: localStorage.getItem('address')
-        },
-        destination: {
-          address: $scope.send.address,
-          amount: {
-            currency:$scope.send.amount.currency,
-            value:$scope.send.amount.value
+      if ($scope.send.value > 0) {
+        $scope.status_text = '计算支付路径...';
+        $ionicLoading.show({template: '正在计算支付路径...'});
+        var findpath = {
+          source: {
+            address: localStorage.getItem('address')
+          },
+          destination: {
+            address: $scope.send.address,
+            amount: {
+              currency: $scope.send.amount.currency,
+              value: $scope.send.value
+            }
           }
         }
+        if ($scope.send.amount.counterparty) {
+          findpath.destination.amount.counterparty = $scope.send.amount.counterparty;
+        }
+        api.getPaths(findpath).then(function (pass, fail) {
+          $ionicLoading.hide();
+          console.log('path', pass);
+          $scope.paths = pass;
+        }).catch(function(e){
+          $scope.paths = [];
+          $ionicLoading.hide();
+        });
       }
-      if($scope.send.amount.counterparty){
-        findpath.destination.amount.counterparty=$scope.send.amount.counterparty;
-      }
-      api.getPaths(findpath).then(function (pass, fail) {
-        $scope.status_text='';
-        $ionicLoading.hide();
-        console.log('path',pass);
-        $scope.paths=pass;
-      });
-    }
-
-    $scope.updateAddress = function () {
-      //if (!send.address)return;
-      $scope.findPath();
-    }
-
-    $scope.updateValue = function () {
-      //if (!send.value)return;
-      $scope.findPath();
-    }
-
-    $scope.updateCurrency = function () {
-      $scope.findPath();
     }
 
     //获取服务器信息以查询对方要可接收的货币
-    $scope.status_text='查询可接收币种...';
+    $scope.active=false;
     $ionicLoading.show({template: '正在查询可接收币种...'});
     conn.then(function(){
-      $scope.status_text='成功连接到支付网络！';
-      $ionicLoading.show({template: '成功连接到支付网络！'});
       api.getServerInfo().then(function(info){
-        $scope.status_text='成功获取服务器信息，开始查询信任线...';
         $ionicLoading.show({template: '成功获取服务器信息，开始查询信任线...'});
         api.getTrustlines($scope.send.address,{ledgerVersion:info.validatedLedger.ledgerVersion-1}).then(function (trustlines) {
-          $scope.status_text='成功获取到信任线！';
           $ionicLoading.show({template: '成功获取到信任线！'});
-          //console.log('trustlines',trustlines);
           trustlines.forEach(function (trustline) {
             $scope.amount.push({
               currency: trustline.specification.currency,
@@ -204,8 +188,12 @@ angular.module('starter.controllers', ['ionic','monospaced.qrcode'])
               value: $scope.send.value,
             })
           });
-          $scope.findPath();
+          $scope.serverInfo = info;
+          $scope.active=true;
+        }).catch(function (e) {
+          $ionicLoading.hide();
         });
+        $scope.findPath();
       })
     });
 

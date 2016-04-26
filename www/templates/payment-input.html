@@ -3,21 +3,19 @@
   <ion-content class="padding">
     <div class="list">
       <label class="item item-input item-stacked-label">
-        <span class="input-label">接收方地址</span>
-        <input type="text" placeholder="r开头的地址" ng-change="updateAddress()" ng-model="send.address">
+        <span class="input-label">接收方</span>
+        <input type="text" placeholder="r开头的账号" ng-change="findPath()" ng-model="send.address">
       </label>
-      <label class="item item-input item-stacked-label">
-        <span class="input-label">金额</span>
-        <input type="text" placeholder="1.00" ng-change="updateValue()" ng-model="send.value">
-      </label>
-      <label class="item item-input item-select">
-        <div class="input-label">币种</div>
-        <select ng-change="updateCurrency()" ng-model="send.amount" ng-options="a.currency for a in amount">
+      <div class="item item-input-inset">
+        <label class="item-input-wrapper" style="background: transparent;">
+          <input type="text" placeholder="金额"  ng-change="findPath()" ng-model="send.value">
+        </label>
+        <select ng-change="findPath()" ng-model="send.amount" ng-options="a.currency for a in amount">
         </select>
-      </label>
+      </div>
     </div>
 
-    <div>{{status_text}}</div>
+    <!--<div ng-show="!active">目标账户未激活，至少发送{{serverInfo.reserveBaseLGD}}LGD激活</div>-->
 
     <div class="card" ng-repeat="path in paths">
       <div class="item item-text-wrap">
