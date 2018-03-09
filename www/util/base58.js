@@ -1,7 +1,7 @@
 
 var Base58Utils = (function () {
   var alphabets = {
-    'ripple':  "rpshnaf39wBUDNEGHJKLM4PQRST7VWXYZ2bcdeCg65jkm8oFqi1tuvAxyz",
+    'ripple':  "Lpshnaf39wBUDNEGHJKrM4PQRST7VWXYZ2bcdeCg65jkm8oFqi1tuvAxyz",
     'bitcoin': "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
   };
 

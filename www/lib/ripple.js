@@ -21890,7 +21890,7 @@ var ripple =
 
   var ALPHABETS = {
     bitcoin: '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz',
-    ripple: 'rpshnaf39wBUDNEGHJKLM4PQRST7VWXYZ2bcdeCg65jkm8oFqi1tuvAxyz',
+    ripple: 'Lpshnaf39wBUDNEGHJKrM4PQRST7VWXYZ2bcdeCg65jkm8oFqi1tuvAxyz',
     tipple: 'RPShNAF39wBUDnEGHJKLM4pQrsT7VWXYZ2bcdeCg65jkm8ofqi1tuvaxyz',
     stellar: 'gsphnaf39wBUDNEGHJKLM4PQRST7VWXYZ2bcdeCr65jkm8oFqi1tuvAxyz'
   };

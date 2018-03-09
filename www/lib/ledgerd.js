@@ -21890,7 +21890,7 @@ var ripple =
 
   var ALPHABETS = {
     bitcoin: '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz',
-    ripple: 'rpshnaf39wBUDNEGHJKLM4PQRST7VWXYZ2bcdeCg65jkm8oFqi1tuvAxyz',
+    ripple: 'Lpshnaf39wBUDNEGHJKrM4PQRST7VWXYZ2bcdeCg65jkm8oFqi1tuvAxyz',
     tipple: 'RPShNAF39wBUDnEGHJKLM4pQrsT7VWXYZ2bcdeCg65jkm8ofqi1tuvaxyz',
     stellar: 'gsphnaf39wBUDNEGHJKLM4PQRST7VWXYZ2bcdeCr65jkm8oFqi1tuvAxyz'
   };
@@ -34689,7 +34689,7 @@ var ripple =
     "type": "string",
     "format": "address",
     "link": "ripple-address",
-    "pattern": "^r[1-9A-HJ-NP-Za-km-z]{25,34}$"
+    "pattern": "^L[1-9A-HJ-NP-Za-km-z]{25,34}$"
   };
 
 /***/ },
