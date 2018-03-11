@@ -227,7 +227,7 @@ angular.module('starter.controllers', ['ionic','monospaced.qrcode'])
         console.log(ledger);
         api.getTransactions(localStorage.getItem('address'), {
           maxLedgerVersion:ledger.ledgerVersion,
-          minLedgerVersion:1,
+          minLedgerVersion:3,
           types: ['payment']
         }).then(function (transactions) {
           $ionicLoading.hide();
