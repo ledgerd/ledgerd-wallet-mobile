@@ -106,27 +106,28 @@ angular.module('starter.controllers', ['ionic','monospaced.qrcode'])
       //向他人付款功能
       $scope.scanPayment = function () {
         //$state.go('payment.input',{address:'rGyr8CauR458A1efcVLHV5Bcs9PaiEVEJt'});//亿石的总账号
-        //$state.go('payment.input',{address:'rEDQGsaPTNKMp9JomYhKsVS7VCjSaGaPWu'});//雍自飞
-        if ($scope.items.length) {
-          cordova.plugins.barcodeScanner.scan(
-            function (result) {
-              if (!result.cancelled) {
-                $state.go('payment.input', {address: result.text})
-              }
-            },
-            function (error) {
-              $ionicPopup.alert({
-                title: '扫描失败',
-                template: error
-              });
-            }
-          );
-        } else {
-          $ionicPopup.alert({
-            title: '失败',
-            template: '账户余额不足，无法进行支付'
-          });
-        }
+        // $state.go('payment.input',{address:'L3UrMZGk66KGcex6JD9WucVaDYmcsuS4td'});//雍自飞
+        $state.go('payment.input',{address:''});
+        // if ($scope.items.length) {
+        //   cordova.plugins.barcodeScanner.scan(
+        //     function (result) {
+        //       if (!result.cancelled) {
+        //         $state.go('payment.input', {address: result.text})
+        //       }
+        //     },
+        //     function (error) {
+        //       $ionicPopup.alert({
+        //         title: '扫描失败',
+        //         template: error
+        //       });
+        //     }
+        //   );
+        // } else {
+        //   $ionicPopup.alert({
+        //     title: '失败',
+        //     template: '账户余额不足，无法进行支付'
+        //   });
+        // }
       }
     }
   })
@@ -174,28 +175,33 @@ angular.module('starter.controllers', ['ionic','monospaced.qrcode'])
     }
 
     //获取服务器信息以查询对方要可接收的货币
-    $scope.active=false;
-    $ionicLoading.show({template: '正在查询可接收币种...'});
-    conn.then(function(){
-      api.getServerInfo().then(function(info){
-        $ionicLoading.show({template: '成功获取服务器信息，开始查询信任线...'});
-        api.getTrustlines($scope.send.address,{ledgerVersion:info.validatedLedger.ledgerVersion-1}).then(function (trustlines) {
-          $ionicLoading.show({template: '成功获取到信任线！'});
-          trustlines.forEach(function (trustline) {
-            $scope.amount.push({
-              currency: trustline.specification.currency,
-              counterparty: trustline.specification.counterparty,
-              value: $scope.send.value,
-            })
-          });
-          $scope.serverInfo = info;
-          $scope.active=true;
-        }).catch(function (e) {
-          $ionicLoading.hide();
-        });
-        $scope.findPath();
-      })
-    });
+    if($scope.send.amount.currency != 'LGD') {
+      $scope.active=false;
+      $ionicLoading.show({template: '正在查询可接收币种...'});
+      conn.then(function(){
+        api.getServerInfo().then(function(info){
+          $ionicLoading.show({template: '成功获取服务器信息，开始查询信任线...'});
+
+            api.getTrustlines($scope.send.address, {ledgerVersion: info.validatedLedger.ledgerVersion - 1}).then(function (trustlines) {
+              console.log(trustlines);
+              $ionicLoading.show({template: '成功获取到信任线！'});
+              trustlines.forEach(function (trustline) {
+                $scope.amount.push({
+                  currency: trustline.specification.currency,
+                  counterparty: trustline.specification.counterparty,
+                  value: $scope.send.value,
+                })
+              });
+              $scope.serverInfo = info;
+              $scope.active = true;
+            }).catch(function (e) {
+              $ionicLoading.hide();
+            });
+
+          $scope.findPath();
+        })
+      });
+    }
 
     $scope.pay=function(path){
       const payment = {
@@ -203,9 +209,9 @@ angular.module('starter.controllers', ['ionic','monospaced.qrcode'])
         destination: path.destination
       };
       $ionicLoading.show({template: '转账中...'});
-      api.preparePayment(localStorage.getItem('address'), payment).then(function(prepared){
-        var signed = api.sign(prepared.txJSON,localStorage.getItem('secret'));
-        api.submit(signed.signedTransaction).then(function(result){
+      api.preparePayment(localStorage.getItem('address'), payment).then(function(prepared){console.warn('bb',prepared);
+        var signed = api.sign(prepared.txJSON,localStorage.getItem('secret'));console.warn('cc',signed);
+        api.submit(signed.signedTransaction).then(function(result){console.warn('dd',result);
           if(result.resultCode == 'tesSUCCESS'){
             $ionicLoading.hide();
             alert('转账成功！');
