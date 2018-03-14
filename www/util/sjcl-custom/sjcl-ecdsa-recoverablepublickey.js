@@ -16,7 +16,7 @@
  */
 
 // Defined here so that this value only needs to be calculated once
-let FIELD_MODULUS_PLUS_ONE_DIVIDED_BY_FOUR;
+var FIELD_MODULUS_PLUS_ONE_DIVIDED_BY_FOUR;
 
 /**
  *  Retrieve the r and s components of a signature
@@ -110,7 +110,7 @@ function recoverPublicKeyPointFromSignature(curve, signature_r, signature_s,
   // That is not necessary here because we are given the recovery_factor
   // step 1.1 Let x = r + jn
   // Here "j" is either 0 or 1
-  let x;
+  var x;
   if (use_second_candidate_key) {
     x = signature_r.add(field_order);
   } else {
@@ -128,7 +128,7 @@ function recoverPublicKeyPointFromSignature(curve, signature_r, signature_s,
   // If beta is even but y isn't or
   // if beta is odd and y is even
   // then subtract beta from the field_modulus
-  let y;
+  var y;
   const beta_is_even = beta.mod(2).equals(0);
   if (beta_is_even && !compressed_point_y_coord_is_even ||
     !beta_is_even && compressed_point_y_coord_is_even) {
@@ -192,9 +192,9 @@ function calculateRecoveryFactor(curve, r, s, hash_bits,
   // TODO: verify that it is possible for the recovery_factor to be 2 or 3,
   // we may only need 1 bit because the canonical signature might remove the
   // possibility of us needing to "use the second candidate key"
-  for (let possible_factor = 0; possible_factor < 4; possible_factor++) {
+  for (var possible_factor = 0; possible_factor < 4; possible_factor++) {
 
-    let resulting_public_key_point;
+    var resulting_public_key_point;
     try {
       resulting_public_key_point = recoverPublicKeyPointFromSignature(
         curve, r, s, hash_bits, possible_factor);
@@ -229,7 +229,7 @@ sjcl.ecc.ecdsa.secretKey.prototype.signWithRecoverablePublicKey = function(
   const self = this;
 
   // Convert hash to bits and determine encoding for output
-  let hash_bits;
+  var hash_bits;
   if (typeof hash === 'object' && hash.length > 0
       && typeof hash[0] === 'number') {
     hash_bits = hash;
@@ -286,7 +286,7 @@ sjcl.ecc.ecdsa.publicKey.recoverFromSignature = function(
   }
 
   // Convert hash to bits and determine encoding for output
-  let hash_bits;
+  var hash_bits;
   if (typeof hash === 'object' && hash.length > 0
       && typeof hash[0] === 'number') {
     hash_bits = hash;
@@ -294,7 +294,7 @@ sjcl.ecc.ecdsa.publicKey.recoverFromSignature = function(
     throw new sjcl.exception.invalid('hash. Must be a bitArray');
   }
 
-  let signature_bits;
+  var signature_bits;
   if (typeof signature === 'object' && signature.length > 0
       && typeof signature[0] === 'number') {
     signature_bits = signature;

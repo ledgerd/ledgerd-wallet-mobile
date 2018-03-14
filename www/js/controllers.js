@@ -162,15 +162,25 @@ angular.module('starter.controllers', ['ionic','monospaced.qrcode'])
         }
         if ($scope.send.amount.counterparty) {
           findpath.destination.amount.counterparty = $scope.send.amount.counterparty;
+
+          api.getPaths(findpath).then(function (pass, fail) {
+            $ionicLoading.hide();
+            console.log('path', pass);
+            $scope.paths = pass;
+          }).catch(function (e) {
+            console.log(e);
+            $scope.paths = [];
+            $ionicLoading.hide();
+          });
+        }else{
+          $ionicLoading.hide();
+          findpath.source.maxAmount = {
+            currency: findpath.destination.amount.currency,
+            value: findpath.destination.amount.value
+          };
+          $scope.paths=[findpath]
+          console.log($scope.paths);
         }
-        api.getPaths(findpath).then(function (pass, fail) {
-          $ionicLoading.hide();
-          console.log('path', pass);
-          $scope.paths = pass;
-        }).catch(function(e){
-          $scope.paths = [];
-          $ionicLoading.hide();
-        });
       }
     }
 

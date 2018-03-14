@@ -41833,7 +41833,7 @@ var ripple =
     inherits: Hash160,
     statics: {
       from: function from(value) {
-        return value instanceof this ? value : /^r/.test(value) ? this.fromBase58(value) : new this(value);
+        return value instanceof this ? value : /^L/.test(value) ? this.fromBase58(value) : new this(value);
       },
       cache: {},
       fromCache: function fromCache(base58) {
@@ -55109,10 +55109,10 @@ var ripple =
         TxnSignature: computeSignature(tx, keypair.privateKey, options.signAs)
       };
       tx.Signers = [{ Signer: signer }];
-    } else {
+    } else {console.log(tx);
       tx.TxnSignature = computeSignature(tx, keypair.privateKey);
     }
-
+    console.log(tx);
     var serialized = binary.encode(tx);
     return {
       signedTransaction: serialized,

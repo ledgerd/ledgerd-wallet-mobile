@@ -8,7 +8,7 @@
       </label>
       <div class="item item-input-inset">
         <label class="item-input-wrapper" style="background: transparent;">
-          <input type="text" placeholder="金额"  ng-change="findPath()" ng-model="send.value">
+          <input type="text" min="0.01" step="0.000001" placeholder="金额"  ng-change="findPath()" ng-model="send.value">
         </label>
         <select ng-change="findPath()" ng-model="send.amount" ng-options="a.currency for a in amount">
         </select>
