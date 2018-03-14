@@ -18,12 +18,9 @@
     <!--<div ng-show="!active">目标账户未激活，至少发送{{serverInfo.reserveBaseLGD}}LGD激活</div>-->
 
     <div class="card" ng-repeat="path in paths">
-      <div class="item item-text-wrap">
-        <h3>{{path.source.maxAmount.value}} {{path.source.maxAmount.currency}}</h3>
-      </div>
       <div class="item item-divider">
         <button class="button button-block button-positive" ng-click="pay(path)">
-        用{{path.source.maxAmount.currency}}支付
+          支付{{path.source.maxAmount.value}} {{path.source.maxAmount.currency}}
         </button>
       </div>
     </div>

@@ -219,18 +219,26 @@ angular.module('starter.controllers', ['ionic','monospaced.qrcode'])
         destination: path.destination
       };
       $ionicLoading.show({template: '转账中...'});
-      api.preparePayment(localStorage.getItem('address'), payment).then(function(prepared){console.warn('bb',prepared);
-        var signed = api.sign(prepared.txJSON,localStorage.getItem('secret'));console.warn('cc',signed);
-        api.submit(signed.signedTransaction).then(function(result){console.warn('dd',result);
-          if(result.resultCode == 'tesSUCCESS'){
-            $ionicLoading.hide();
-            alert('转账成功！');
-            $location.path('/payment/dash');
-          }else{
-            $ionicLoading.hide();
-            alert(result.resultCode+'->'+ result.resultMessage);
-          }
-        });
+      api.preparePayment(localStorage.getItem('address'), payment).then(function(prepared){
+        console.warn('bb',prepared);
+        try {
+          var signed = api.sign(prepared.txJSON, localStorage.getItem('secret'));
+          console.warn('cc', signed);
+          api.submit(signed.signedTransaction).then(function (result) {
+            console.warn('dd', result);
+            if (result.resultCode == 'tesSUCCESS') {
+              $ionicLoading.hide();
+              alert('转账成功！');
+              $location.path('/payment/dash');
+            } else {
+              $ionicLoading.hide();
+              alert(result.resultCode + '->' + result.resultMessage);
+            }
+          });
+        }catch (err){
+          $ionicLoading.hide();
+          alert(err);
+        }
       });
     }
   })
